@@ -30,6 +30,9 @@ class Value:
     def __rmul__(self, other):
         return self * other
 
+    def __rsub__(self, other):
+        return self - other
+
     def __neg__(self):
         return self * -1
 
@@ -63,6 +66,15 @@ class Value:
         def backward():
             self.grad = (1 - math.tanh(self.data)**2) * out.grad
         out._backward = backward
+
+        return out
+
+    def relu(self):
+        out = Value(0 if self.data < 0 else self.data, (self,))
+
+        def _backward():
+            self.grad += (out.data > 0) * out.grad
+        out._backward = _backward
 
         return out
 
