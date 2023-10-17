@@ -1,29 +1,37 @@
-from mgradscratch import *
+from nn import *
+import numpy as np
+import matplotlib.pyplot as plt
 
-#x1 = Value(2.0)
-#x2 = Value(0.0)
-#w1 = Value(-3.0)
-#w2 = Value(1.0)
-#b = Value(6.8813735870195432)
-#x1w1 = x1 * w1
-#x2w2 = x2 * w2
-#x1w1_x2w2 = x1w1 + x2w2
-#n = x1w1_x2w2 + b
-#o = n.tanh()
-#o.backward()
+model = NeuralNetwork(
+    [
+        Layer(1, 3),
+        Layer(3, 1)
+    ]
+)
 
-x1 = Value(2.0)
-x2 = Value(0.0)
-w1 = Value(-3.0)
-w2 = Value(1.0)
-b = Value(6.8813735870195432)
-x1w1 = x1 * w1
-x2w2 = x2 * w2
-x1w1_x2w2 = x1w1 + x2w2
-n = x1w1_x2w2 + b
-c = (2*n).exp()
-o = (c - 1) / (c + 1)
-print(o)
-o.backward()
+x = np.linspace(0, 10, 20).reshape(-1, 1)
+y = x * 2 + 3
+y = y.flatten()
+x.reshape(-1, 1)
+x = x.tolist()
+y = y.tolist()
 
-print(x1.grad)
+epochs = 10000
+alpha = 0.001
+
+for epochs in range(epochs):
+    ypred = list(map(model, x))
+    loss = sum((yout - ygt)**2 for ygt, yout in zip(y, ypred)) / len(y)
+    if epochs % 100 == 0:
+        print(f"loss at {epochs}th: {loss.data}")
+    
+    for p in model.parameters():
+        p.grad = 0.0
+    loss.backward()
+    
+    for p in model.parameters():
+        p.data += -alpha * p.grad
+
+plt.plot(x, list(map(lambda x: x.data, map(model, x))), color='orange', zorder=1)
+plt.scatter(x, y)
+plt.show()
