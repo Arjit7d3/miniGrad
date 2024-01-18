@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 model = NeuralNetwork(
     [
         Layer(1, 3),
-        Layer(3, 1)
+        Layer(3, 1, nonlin=False)
     ]
 )
 
